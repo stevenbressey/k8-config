@@ -1,0 +1,57 @@
+---
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: traefik-ingress-controller
+  namespace: kube-system
+  labels:
+    k8s-app: traefik-ingress-lb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: traefik-ingress-lb
+  template:
+    metadata:
+      labels:
+        k8s-app: traefik-ingress-lb
+        name: traefik-ingress-lb
+    spec:
+      serviceAccountName: traefik-ingress-controller
+      terminationGracePeriodSeconds: 60
+      containers:
+        - image: traefik:v2.0
+          name: traefik
+          ports:
+            - name: web
+              containerPort: 80
+            - name: websecure
+              containerPort: 443
+            - name: dashboard
+              containerPort: 8080
+          args:
+            - --api.insecure
+            - --accesslog
+            - --entrypoints.websecure.Address=:443
+            - --entrypoints.web.Address=:80
+            - --providers.kubernetescrd
+            - --providers.kubernetesingress
+            - --providers.kubernetesingress.ingressclass=traefik
+            - --providers.kubernetescrd.labelselector=traefik-ingress
+            - --certificatesresolvers.default.acme.tlschallenge
+            - --certificatesresolvers.default.acme.email=steven.bressey@gmail.com
+            - --certificatesresolvers.default.acme.storage=acme.json
+##            --providers.kubernetesingress.ingressendpoint.hostname  (Default: "")
+#            Hostname used for Kubernetes Ingress endpoints.
+#
+#            --providers.kubernetesingress.ingressendpoint.ip  (Default: "")
+#            IP used for Kubernetes Ingress endpoints.
+#
+#            --providers.kubernetesingress.ingressendpoint.publishedservice  (Default: "")
+#               Published Kubernetes Service to copy status from.
+#
+#            --providers.kubernetesingress.labelselector  (Default: "")
+#              Kubernetes Ingress label selector to use.
+#
+#            --providers.kubernetesingress.namespaces  (Default: "")
+#            Kubernetes namespaces.
