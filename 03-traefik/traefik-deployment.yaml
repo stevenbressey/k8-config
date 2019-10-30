@@ -38,9 +38,6 @@ spec:
             - --providers.kubernetesingress
             - --providers.kubernetesingress.ingressclass=traefik
             - --providers.kubernetescrd.labelselector=traefik-ingress
-            - --certificatesresolvers.default.acme.tlschallenge
-            - --certificatesresolvers.default.acme.email=steven.bressey@gmail.com
-            - --certificatesresolvers.default.acme.storage=acme.json
 ##            --providers.kubernetesingress.ingressendpoint.hostname  (Default: "")
 #            Hostname used for Kubernetes Ingress endpoints.
 #
